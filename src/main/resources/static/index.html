@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Filmes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🎬 Catálogo de Filmes</h1>
+
+    <!-- Adicionar filme -->
+    <section class="card">
+        <h2>➕ Adicionar Filme</h2>
+        <div class="form-group">
+            <input type="text" id="titulo" placeholder="Título do Filme">
+            <input type="text" id="diretor" placeholder="Diretor">
+            <input type="number" id="ano" placeholder="Ano de Lançamento">
+            <input type="text" id="genero" placeholder="Gênero">
+        </div>
+        <button onclick="criar()" class="btn-primary">Salvar Filme</button>
+    </section>
+
+    <!-- Buscar filme -->
+    <section class="card">
+        <h2>🔍 Buscar Filme</h2>
+        <div class="form-group">
+            <input type="text" id="buscarTitulo" placeholder="Título do Filme">
+        </div>
+        <button onclick="buscar()" class="btn-secondary">Buscar</button>
+        <div id="resultadoBuscar" class="resultado"></div>
+    </section>
+
+    <!-- Deletar filme -->
+    <section class="card">
+        <h2>🗑️ Remover Filme</h2>
+        <div class="form-group">
+            <input type="text" id="deletarTitulo" placeholder="Título do Filme">
+        </div>
+        <button onclick="deletar()" class="btn-danger">Remover</button>
+    </section>
+
+    <!-- Atualizar filme -->
+    <section class="card">
+        <h2>✏️ Atualizar Filme</h2>
+        <div class="form-group">
+            <input type="number" id="id" placeholder="ID do Filme">
+            <input type="text" id="novoTitulo" placeholder="Novo Título">
+            <input type="text" id="novoDiretor" placeholder="Novo Diretor">
+            <input type="number" id="novoAno" placeholder="Novo Ano">
+            <input type="text" id="novoGenero" placeholder="Novo Gênero">
+        </div>
+        <button onclick="atualizar()" class="btn-warning">Atualizar</button>
+    </section>
+</div>
+
+<script>
+    const api = "/filme";
+
+    async function criar() {
+      const resp = await fetch(api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titulo: document.getElementById("titulo").value,
+          diretor: document.getElementById("diretor").value,
+          ano: parseInt(document.getElementById("ano").value),
+          genero: document.getElementById("genero").value
+        })
+      });
+      alert(resp.ok ? "Filme adicionado com sucesso!" : "Erro ao adicionar filme!");
+      if (resp.ok) {
+        limparCamposCriar();
+      }
+    }
+
+    async function buscar() {
+      const titulo = document.getElementById("buscarTitulo").value;
+      const resp = await fetch(`${api}?titulo=${encodeURIComponent(titulo)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        document.getElementById("resultadoBuscar").innerHTML = `
+          <div class="filme-info">
+            <h3>🎬 ${data.titulo}</h3>
+            <p><strong>Diretor:</strong> ${data.diretor}</p>
+            <p><strong>Ano:</strong> ${data.ano}</p>
+            <p><strong>Gênero:</strong> ${data.genero}</p>
+          </div>
+        `;
+      } else {
+        document.getElementById("resultadoBuscar").innerHTML = "<p class='erro'>Filme não encontrado!</p>";
+      }
+    }
+
+    async function deletar() {
+      const titulo = document.getElementById("deletarTitulo").value;
+      const resp = await fetch(`${api}?titulo=${encodeURIComponent(titulo)}`, { method: "DELETE" });
+      alert(resp.ok ? "Filme removido com sucesso!" : "Erro ao remover filme!");
+      if (resp.ok) {
+        document.getElementById("deletarTitulo").value = "";
+      }
+    }
+
+    async function atualizar() {
+      const id = document.getElementById("id").value;
+      const resp = await fetch(`${api}?id=${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titulo: document.getElementById("novoTitulo").value,
+          diretor: document.getElementById("novoDiretor").value,
+          ano: parseInt(document.getElementById("novoAno").value),
+          genero: document.getElementById("novoGenero").value
+        })
+      });
+      alert(resp.ok ? "Filme atualizado com sucesso!" : "Erro ao atualizar filme!");
+      if (resp.ok) {
+        limparCamposAtualizar();
+      }
+    }
+
+    function limparCamposCriar() {
+      document.getElementById("titulo").value = "";
+      document.getElementById("diretor").value = "";
+      document.getElementById("ano").value = "";
+      document.getElementById("genero").value = "";
+    }
+
+    function limparCamposAtualizar() {
+      document.getElementById("id").value = "";
+      document.getElementById("novoTitulo").value = "";
+      document.getElementById("novoDiretor").value = "";
+      document.getElementById("novoAno").value = "";
+      document.getElementById("novoGenero").value = "";
+    }
+</script>
+</body>
+</html>
