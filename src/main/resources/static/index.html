@@ -27,7 +27,10 @@
         <div class="form-group">
             <input type="text" id="buscarTitulo" placeholder="Título do Filme">
         </div>
-        <button onclick="buscar()" class="btn-secondary">Buscar</button>
+        <div class="button-group">
+            <button onclick="buscar()" class="btn-secondary">Buscar</button>
+            <button onclick="listarTodos()" class="btn-info">Listar Todos</button>
+        </div>
         <div id="resultadoBuscar" class="resultado"></div>
     </section>
 
@@ -89,6 +92,32 @@
         `;
       } else {
         document.getElementById("resultadoBuscar").innerHTML = "<p class='erro'>Filme não encontrado!</p>";
+      }
+    }
+
+    async function listarTodos() {
+      const resp = await fetch(`${api}/todos`);
+      if (resp.ok) {
+        const filmes = await resp.json();
+        if (filmes.length === 0) {
+          document.getElementById("resultadoBuscar").innerHTML = "<p class='info'>Nenhum filme cadastrado ainda.</p>";
+        } else {
+          let html = '<div class="lista-filmes"><h3>📚 Todos os Filmes</h3>';
+          filmes.forEach(filme => {
+            html += `
+              <div class="filme-item">
+                <h4>🎬 ${filme.titulo}</h4>
+                <p><strong>Diretor:</strong> ${filme.diretor}</p>
+                <p><strong>Ano:</strong> ${filme.ano}</p>
+                <p><strong>Gênero:</strong> ${filme.genero}</p>
+              </div>
+            `;
+          });
+          html += '</div>';
+          document.getElementById("resultadoBuscar").innerHTML = html;
+        }
+      } else {
+        document.getElementById("resultadoBuscar").innerHTML = "<p class='erro'>Erro ao carregar filmes!</p>";
       }
     }
 

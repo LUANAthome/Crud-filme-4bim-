@@ -24,6 +24,11 @@ public class FilmeController {
         return ResponseEntity.ok(filmeService.buscarFilmePorTitulo(titulo));
     }
 
+    @GetMapping("/todos")
+    public ResponseEntity<java.util.List<Filme>> listarTodosFilmes() {
+        return ResponseEntity.ok(filmeService.listarTodosFilmes());
+    }
+
     @DeleteMapping
     public ResponseEntity<Void> deletarFilmePorTitulo(@RequestParam String titulo){
         filmeService.deletarFilmePorTitulo(titulo);

@@ -25,6 +25,10 @@ public class FilmeService {
 
     }
 
+    public java.util.List<Filme> listarTodosFilmes(){
+        return repository.findAll();
+    }
+
     public void deletarFilmePorTitulo(String titulo){
         repository.deleteByTitulo(titulo);
     }
